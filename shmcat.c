@@ -18,9 +18,21 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-
+const int DEFAULT_SHMCAT_DISPLAY_BYTES_PER_ROW=16;
 int main(int argc, char *argv[])
 {
+    int i_SHMCAT_DISPLAY_BYTES_PER_ROW=DEFAULT_SHMCAT_DISPLAY_BYTES_PER_ROW;
+    int iSize=0;
+    const char* pSHMCAT_DISPLAY_BYTES_PER_ROW = getenv("SHMCAT_DISPLAY_BYTES_PER_ROW");
+    if ( pSHMCAT_DISPLAY_BYTES_PER_ROW && *pSHMCAT_DISPLAY_BYTES_PER_ROW != 0)
+    {
+        iSize=atoi(pSHMCAT_DISPLAY_BYTES_PER_ROW);
+        if( iSize > 1 )
+            iSize=(((iSize - 1)/16) + 1) * 16;
+        if( iSize )
+            i_SHMCAT_DISPLAY_BYTES_PER_ROW=iSize;
+    }
+    printf("Using %d display bytes per row ", i_SHMCAT_DISPLAY_BYTES_PER_ROW);
     if (argc < 2) {
         printf("Need to specify a shmid as first argument.\n");
         return -1;
@@ -50,15 +62,15 @@ int main(int argc, char *argv[])
         printf("shmat() failed: %s\n", strerror(errno));
         return -1;
     }
-    unsigned char sbuf[32];
+    unsigned char sbuf[i_SHMCAT_DISPLAY_BYTES_PER_ROW * 2];
     memset(sbuf, 0, sizeof sbuf);
     size_t si = 0;
     printf("\n%8.8zX  ", si);
     for (si = 0; si < shm_bytes; ++si) {
-        size_t sis = si % 16;
-        if (si && si % 16 == 0) {
+        size_t sis = si % i_SHMCAT_DISPLAY_BYTES_PER_ROW;
+        if (si && si % i_SHMCAT_DISPLAY_BYTES_PER_ROW == 0) {
             printf(" ");
-            for (size_t i = 0; i < 16; ++i) {
+            for (size_t i = 0; i < i_SHMCAT_DISPLAY_BYTES_PER_ROW; ++i) {
                 printf("%c", isprint(sbuf[i]) ? sbuf[i] : '.');
             }
             memset(sbuf, 0, sizeof sbuf);
@@ -68,9 +80,9 @@ int main(int argc, char *argv[])
         printf("%2.2X ", sbuf[sis]);
     }
     if (si) {
-        size_t sis = si % 16;
-        sis = sis ? sis : 16;
-        for (size_t i = sis; i < 16; ++i)
+        size_t sis = si % i_SHMCAT_DISPLAY_BYTES_PER_ROW;
+        sis = sis ? sis : i_SHMCAT_DISPLAY_BYTES_PER_ROW;
+        for (size_t i = sis; i < i_SHMCAT_DISPLAY_BYTES_PER_ROW; ++i)
             printf("   ");
         printf(" ");
         for (size_t i = 0; i < sis; ++i) {

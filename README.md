@@ -1,6 +1,7 @@
 # shmcat
 
 Copyright (c) 2014-2017 Nicholas J. Kain.
+Copyright (c) 2022-2023  Hardeep Parmar.
 
 License: MIT
 
@@ -44,9 +45,14 @@ Now, given the <shmid>:
 The output should be very similar to that of a hex editor.  It can of
 course be redirected to a file using standard unix shell facilities.
 
+Use Enviroment variable SHMCAT_DISPLAY_BYTES_PER_ROW to set number of bytes(rounded to nearest multipel of 16)
+to show in one row(default 16) e.g
+SHMCAT_DISPLAY_BYTES_PER_ROW=35 shmcat <shmid>
+will show 48 bytes
+SHMCAT_DISPLAY_BYTES_PER_ROW=32 shmcat <shmid>
+will show 32 bytes
+SHMCAT_DISPLAY_BYTES_PER_ROW=1 shmcat <shmid>
+will show 1 bytes per row.
 ## Downloads
 
-* [GitLab](https://gitlab.com/niklata/shmcat)
-* [Codeberg](https://codeberg.org/niklata/shmcat)
-* [BitBucket](https://bitbucket.com/niklata/shmcat)
-* [GitHub](https://github.com/niklata/shmcat)
+* [GitHub](https://github.com/hardeepparmar/shmcat)
